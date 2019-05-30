@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style> #Des {text-align: center; margin-top: 2rem;} * { padding: 0; margin: 0; } canvas { background: rgb(37, 36, 36); display: block; margin: 0 auto; border: 5px solid rgb(0, 0, 0);}</style>
+
+</head>
+<body>
+    <canvas id='myCanvas' width='1300' height='580'></canvas>
+<!-- we use this: 'canvas' to get a space for drawing -->
+
+    <script>
+        var canvas = document.getElementById('myCanvas');
+// we have to get the canvas in a var by it's ID
+        var ctx = canvas.getContext('2d');
+// the func 'canvas' obligates us to define the context, cause we have two types: 2d or 3d
+// 'ctx' could be the ball or the paddle or the brick(we'll see this 3 types later)
+//  2d  let us define just 2 (x, y) here
+        var x = (canvas.width) / 2;
+// to let it start from the half of the width 
+        var y = (canvas.height) / 2;
+// to let it start from the height 30
+        var ballRadius = 10;
+        var dx = 2;
+        var dy = -2;
+
+// this 2 var defines us the difference between the first x and the second x for ex(this is with dx)
+// we wrote 2 for dx and -2 for dy bc the x and y are like this ------------------------->    *--|--|--|--|-- X
+                                                                                        //    |
+                                                                                        //    |
+                                                                                        // Y  -
+                                                                                        //    |
+
+        var paddleHeight = 75;
+        var paddleWidth = 10;
+        var paddle1 = (canvas.height-paddleHeight)/2;
+        var paddle2 = (canvas.height-paddleHeight)/2;
+// 'paddleX' defines the difference between the paddle and the limit with canvas
+        var UpPressed1 = false;
+// we wrote a var named: 'rightPressed' with the value: false.. means that it's stopped for executing 
+        var DownPressed2 = false;
+// 'https://keycode.info/' this website let us know the codes of any key or button
+        var UpPressed2 = false;
+        var DownPressed2 = false;
+
+        document.addEventListener('keydown', keyDownHandler, false);
+        document.addEventListener('keyup', keyUpHandler, false);
+
+
+        function keyDownHandler(e) {
+            if (e.keyCode == 38) {
+                DownPressed1 = true;
+            }
+// this function works with: 'e' (as the event), means if the keyCode of the event is: 39 then the var rightPressed will be true
+            else if (e.keyCode == 40) {
+                UpPressed1 = true;
+            }
+// the same with the left
+            if (e.keyCode == 87) {
+                DownPressed2 = true;
+            }
+            else if (e.keyCode == 83) {
+                UpPressed2 = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.keyCode == 38) {
+                DownPressed1 = false;
+            }
+            else if (e.keyCode == 40) {
+                UpPressed1 = false;
+            }
+            if (e.keyCode == 87) {
+                DownPressed2 = false;
+            }
+            else if (e.keyCode == 83) {
+                UpPressed2 = false;
+            }
+        }
+
+
+        function drawBall() {
+            ctx.beginPath();
+// this is an order to begin
+            ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+// this is the code to draw an ARC which will be the ball bc of Math.PI*2
+// 'Math.PI*2' means that: draw a circle (PI*2) from the object Math
+                ctx.fillStyle = 'Red';
+// the color of the ball
+                ctx.fill();
+// means: execute the fill or the ball
+                ctx.closePath();
+// this means that: finish the draw
+        }
+
+        function drawPaddle1() {
+            ctx.beginPath();
+            ctx.rect(0, paddle1, paddleWidth, paddleHeight);
+// means: 'paddleX' the position of that draw in the width, the second is: it's position in the height (comparing with the canvas)
+            ctx.fillStyle = 'Yellow';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawPaddle2() {
+            ctx.beginPath();
+            ctx.rect(canvas.width-paddleWidth, paddle2, paddleWidth, paddleHeight);
+// means: 'paddleX' the position of that draw in the width, the second is: it's position in the height (comparing with the canvas)
+            ctx.fillStyle = 'Green';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+// 'clearRect' to supprime the last draw of the rect or the arc
+            drawBall();
+// to execute the function: drawBall
+            drawPaddle1();
+            drawPaddle2();
+
+            if (y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+                dy = -dy;
+            }
+// means if the ball just touch the max in the max of the canvas then it will go back auto(right and left)
+            
+            if (x + dx > canvas.width-ballRadius) {
+                if (y > paddle2 && y < paddle2 + paddleHeight) {
+                    dx = -dx;
+                }
+                else {
+                    alert('Player1 WON!')
+                    document.location.reload();
+                }
+            }
+            
+            if (x + dx < ballRadius) {
+                if (y > paddle1 && y < paddle1 + paddleHeight) {
+                    dx = -dx;
+                }
+                else {
+                    alert('Player2 WON!');
+                    document.location.reload();
+                }
+            }
+            
+            
+            if (UpPressed1 && paddle1 < canvas.height-paddleHeight) {
+// means if we press on the right button and the paddleX won't go longer than the canvas.Width-paddleWidth
+// 'rightPressed' only is like 'rightPressed == true'
+                paddle1 += 7;
+            }
+            else if (DownPressed1 && paddle1 > 0) {
+// and this will exxecute on the left part 
+                paddle1 -= 7;
+            }
+
+            if (UpPressed2 && paddle2 < canvas.height-paddleHeight) {
+// means if we press on the right button and the paddleX won't go longer than the canvas.Width-paddleWidth
+// 'rightPressed' only is like 'rightPressed == true'
+                paddle2 += 7;
+            }
+            else if (DownPressed2 && paddle2 > 0) {
+// and this will exxecute on the left part 
+                paddle2 -= 7;
+            }
+
+            x += dx;
+            y += dy;
+        }
+        
+
+        var game = setInterval(draw, 3);
+// 'setI..' means that draw what we coded
+// '10' defines the vitesse of the ball
+
+    </script>
+
+    <div id='Des'>
+        <p>Player1: Yellow</p><br>
+        <p>Player2: Green</p>
+    </div>
+
+                                                                <!-- developed by Abdoug -->
+
+</body>
+</html>
